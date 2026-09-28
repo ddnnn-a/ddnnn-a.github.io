@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-M57Z4BGP');</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SidePin — Keep your go-to apps always in sight</title>
+<meta name="description" content="SidePin reserves a strip along the edge of your Mac's screen and keeps Slack, your terminal, or Notion neatly arranged — never buried under other windows.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root {
+    --text: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-subdued: #86868b;
+    --blue: #0066cc;
+    --canvas: #ffffff;
+    --gray-section: #f5f5f7;
+    --hairline: #d2d2d7;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--canvas);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.47;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 22px; }
+  .narrow { max-width: 700px; }
+
+  /* ---- Hero ---- */
+  .hero {
+    text-align: center;
+    padding: 72px 0 0;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+    font-size: 64px;
+    line-height: 1.06;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+  .hero h1 .grad {
+    background: linear-gradient(92deg, #0a84ff 5%, #3f6cff 45%, #64d2ff 95%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero .sub {
+    font-size: 24px;
+    line-height: 1.35;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin: 22px auto 0;
+    max-width: 640px;
+  }
+  .cta-row { margin-top: 26px; display: flex; gap: 22px; justify-content: center; align-items: center; }
+  .btn {
+    display: inline-block;
+    background: var(--blue);
+    color: #fff;
+    font-size: 17px;
+    line-height: 1;
+    padding: 15px 30px;
+    border-radius: 980px;
+    text-decoration: none;
+    font-weight: 400;
+  }
+  .btn:hover { background: #0071e3; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 13px;
+    background: #000;
+    color: #fff;
+    border: 1px solid #4a4a4f;
+    border-radius: 13px;
+    padding: 11px 44px 12px 34px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .badge:hover { background: #1d1d1f; }
+  .badge svg { width: 32px; height: 32px; margin-top: -3px; }
+  .badge-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; }
+  .badge-text small { font-size: 13px; font-weight: 400; letter-spacing: 0.01em; }
+  .badge-text strong { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
+  .textlink { color: var(--blue); font-size: 17px; text-decoration: none; }
+  .textlink:hover { text-decoration: underline; }
+  .textlink::after { content: " ›"; }
+  .fineprint { color: var(--text-subdued); font-size: 12px; margin-top: 12px; }
+
+  /* ---- Demo video ---- */
+  .demo { padding: 36px 0 100px; position: relative; }
+  .demo-frame {
+    position: relative;
+    z-index: 1;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 24px 56px rgba(0,0,0,0.14);
+    background: #f0f1f4;
+    line-height: 0;
+  }
+  .demo-frame video, .demo-frame svg { width: 100%; height: auto; display: block; }
+  .demo-caption { text-align: center; color: var(--text-subdued); font-size: 14px; margin-top: 18px; line-height: 1.4; }
+  .demo-caption kbd { font-family: inherit; }
+
+  /* ---- Animated demo (11s loop) ---- */
+  /* 中身は cqw（ステージ幅基準）で組み、フレーム幅に比例して縮める */
+  .stage {
+    position: relative;
+    aspect-ratio: 12 / 7;
+    container: stage / inline-size;
+    background: linear-gradient(180deg, #eef0f4 0%, #e1e4ea 100%);
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.3;
+    animation: scene 11s infinite;
+  }
+  .menubar {
+    position: absolute; top: 0; left: 0; right: 0; height: 4.5%;
+    display: flex; align-items: center; gap: 1.7cqw;
+    padding: 0 1.6cqw;
+    background: rgba(251, 251, 253, 0.95);
+    border-bottom: 1px solid #dddde2;
+    font-size: 1.05cqw;
+    color: #1d1d1f;
+    white-space: nowrap;
+  }
+  .menubar b { font-weight: 600; }
+  .menubar .mb-right { margin-left: auto; display: flex; align-items: center; gap: 1.4cqw; }
+  .menubar svg { width: 1.5cqw; height: 1.5cqw; display: block; }
+  .zone {
+    position: absolute; top: 6.5%; left: 72%; width: 26%; height: 91.5%;
+    border: 1.5px dashed rgba(0, 102, 204, 0.4);
+    border-radius: 10px;
+    background: rgba(0, 102, 204, 0.05);
+    opacity: 0;
+    animation: zone 11s infinite;
+  }
+  .win {
+    position: absolute;
+    display: flex; flex-direction: column;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 0.9cqw;
+    box-shadow: 0 1.2cqw 2.8cqw rgba(0, 0, 0, 0.16);
+    overflow: hidden;
+  }
+  .win .bar {
+    flex: none;
+    position: relative;
+    height: 2.4cqw;
+    display: flex; align-items: center; justify-content: center;
+    background: #f6f6f8;
+    border-bottom: 1px solid #e6e6eb;
+    color: #6e6e73;
+    font-size: 1cqw;
+    font-weight: 600;
+  }
+  .win .dots {
+    position: absolute; left: 1cqw; top: 50%;
+    width: 0.8cqw; height: 0.8cqw; margin-top: -0.4cqw;
+    border-radius: 50%;
+    background: #ff5f57;
+    box-shadow: 1.2cqw 0 0 #febc2e, 2.4cqw 0 0 #28c840;
+  }
+  .claude { top: 8%; height: 88.5%; width: 58%; left: 4%; z-index: 3; animation: claude 11s infinite; }
+  .slack  { z-index: 4; animation: slack 11s infinite; }
+  .gcal   { z-index: 5; animation: gcal 11s infinite; }
+
+  /* Claude Code（ターミナル） */
+  .claude { background: #1e1f22; border-color: #3a3c44; }
+  .claude .bar { background: #2a2b2f; color: #a1a1a8; border-bottom-color: #37393f; font-weight: 500; }
+  .term {
+    flex: 1;
+    padding: 1.3cqw 1.5cqw;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 1.1cqw;
+    line-height: 1.6;
+    color: #d4d4d8;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .term .in { padding-left: 2ch; }
+  .term .in2 { padding-left: 5ch; }
+  .term > div { overflow: hidden; }
+  .term .welcome {
+    display: inline-block;
+    border: 1px solid #d97757;
+    border-radius: 0.5cqw;
+    padding: 0.5cqw 1.2cqw;
+    margin-bottom: 1.1cqw;
+  }
+  .term .accent { color: #d97757; }
+  .term .dim { color: #85858d; }
+  .term .me { color: #ffffff; }
+  .term .ok { color: #5fd28a; }
+  .term .add { color: #7ee2a0; background: rgba(95, 210, 138, 0.12); }
+  .term .del { color: #ff8b82; background: rgba(255, 123, 114, 0.12); }
+  .term .cursor { display: inline-block; width: 0.62em; height: 1.15em; vertical-align: -0.2em; background: #d4d4d8; animation: blink 1s steps(1) infinite; }
+  .t1 { animation: t1 11s infinite; }
+  .t2 { animation: t2 11s infinite; }
+  .t3 { animation: t3 11s infinite; }
+  .t4 { animation: t4 11s infinite; }
+  .tspin { animation: tspin 11s infinite; }
+
+  /* Slack 風 */
+  .slack .bar { background: #350d36; border-bottom-color: #350d36; }
+  .slack .search {
+    width: 52%; height: 1.4cqw; line-height: 1.4cqw;
+    border-radius: 0.4cqw;
+    background: rgba(255, 255, 255, 0.16);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.85cqw; font-weight: 400;
+    text-align: center;
+  }
+  .sl { flex: 1; display: flex; min-height: 0; }
+  .sl-side {
+    flex: none; width: 30%;
+    background: #3f0e40;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.9cqw;
+    padding: 1cqw 0;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .sl-side span { display: block; padding: 0.25cqw 0.9cqw; }
+  .sl-side .ws { color: #fff; font-weight: 700; font-size: 1.05cqw; padding-bottom: 0.9cqw; }
+  .sl-side .on { background: #1164a3; color: #fff; }
+  .sl-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .sl-head { flex: none; padding: 0.7cqw 1cqw; border-bottom: 1px solid #ececf0; font-size: 1cqw; font-weight: 700; }
+  .sl-msgs {
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    overflow: hidden;
+    padding: 0 1cqw 0.4cqw;
+  }
+  .msg { display: flex; gap: 0.7cqw; padding: 0.5cqw 0; font-size: 0.9cqw; }
+  .msg .av {
+    flex: none; width: 2cqw; height: 2cqw; border-radius: 0.45cqw;
+    background: var(--c);
+    color: #fff; font-style: normal; font-weight: 700; font-size: 0.95cqw;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .msg b { font-weight: 700; }
+  .msg small { color: #86868b; font-size: 0.75cqw; margin-left: 0.3cqw; }
+  .msg p { color: #1d1d1f; }
+  .msg.new { border-radius: 0.4cqw; animation: newmsg 11s infinite; }
+  .sl-compose {
+    flex: none;
+    margin: 0 1cqw 1cqw;
+    border: 1px solid #c9c9ce; border-radius: 0.6cqw;
+    padding: 0.6cqw 0.8cqw;
+    color: #9a9aa0; font-size: 0.9cqw;
+  }
+
+  /* Google カレンダー風 */
+  .gc-head { flex: none; display: flex; align-items: center; gap: 0.9cqw; padding: 0.7cqw 1cqw; font-size: 1.05cqw; white-space: nowrap; }
+  .gc-head b { font-weight: 500; color: #3c4043; }
+  .gc-head .today { border: 1px solid #dadce0; border-radius: 0.5cqw; padding: 0.15cqw 0.7cqw; font-size: 0.85cqw; color: #3c4043; }
+  .gc-days, .gc-body { display: grid; grid-template-columns: 3.2cqw repeat(3, 1fr); }
+  .gc-days { flex: none; border-bottom: 1px solid #dadce0; padding-bottom: 0.4cqw; }
+  .gc-days span { text-align: center; font-size: 0.7cqw; color: #70757a; letter-spacing: 0.04em; }
+  .gc-days span b { display: block; margin: 0.15cqw auto 0; width: 2.1cqw; height: 2.1cqw; line-height: 2.1cqw; border-radius: 50%; font-size: 1.1cqw; font-weight: 400; color: #3c4043; letter-spacing: 0; }
+  .gc-days .is-today { color: #1a73e8; }
+  .gc-days .is-today b { background: #1a73e8; color: #fff; }
+  .gc-body { flex: 1; min-height: 0; position: relative; }
+  .gc-hours { position: relative; }
+  .gc-hours span { position: absolute; right: 0.4cqw; font-size: 0.65cqw; color: #70757a; transform: translateY(-50%); }
+  .gc-col {
+    position: relative;
+    border-left: 1px solid #dadce0;
+    background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(100% / 6 - 1px), #ececf0 calc(100% / 6 - 1px), #ececf0 calc(100% / 6));
+  }
+  .ev {
+    position: absolute; left: 0.2cqw; right: 0.3cqw;
+    border-radius: 0.35cqw;
+    background: var(--c);
+    color: #fff;
+    font-size: 0.72cqw; font-weight: 500; line-height: 1.2;
+    padding: 0.1cqw 0.35cqw;
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  .gc-now { position: absolute; left: -1px; right: 0; height: 2px; background: #ea4335; }
+  .gc-now::before { content: ""; position: absolute; left: -0.45cqw; top: -0.35cqw; width: 0.9cqw; height: 0.9cqw; border-radius: 50%; background: #ea4335; }
+
+  .stage .pointer { position: absolute; width: 1.9cqw; z-index: 10; opacity: 0; animation: pointer 11s infinite; }
+  .chip {
+    position: absolute; left: 50%; bottom: 6%;
+    transform: translateX(-50%);
+    background: rgba(29, 29, 31, 0.88);
+    color: #fff;
+    font-size: 1.7cqw;
+    font-weight: 600;
+    padding: 0.8cqw 1.8cqw;
+    border-radius: 980px;
+    opacity: 0;
+    z-index: 9;
+  }
+  .chip1 { animation: chip1 11s infinite; }
+  .chip2 { animation: chip2 11s infinite; }
+
+  @keyframes scene {
+    0%, 91% { opacity: 1; }
+    94%, 97% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes zone {
+    0%, 9% { opacity: 0; }
+    14%, 92% { opacity: 1; }
+    96%, 100% { opacity: 0; }
+  }
+  /* Slack: 散らかり → 右列全高 → 上半分に分割 */
+  @keyframes slack {
+    0%, 9%   { left: 48%; top: 12%; width: 30%; height: 50%; }
+    16%, 24% { left: 73%; top: 8%;  width: 24%; height: 88.5%; }
+    32%, 92% { left: 73%; top: 8%;  width: 24%; height: 43%; }
+    96%, 100% { left: 48%; top: 12%; width: 30%; height: 50%; }
+  }
+  /* カレンダー: 散らかり → 右列下半分 */
+  @keyframes gcal {
+    0%, 25%  { left: 31%; top: 49%; width: 32%; height: 44%; }
+    32%, 92% { left: 73%; top: 53.5%; width: 24%; height: 43%; }
+    96%, 100% { left: 31%; top: 49%; width: 32%; height: 44%; }
+  }
+  /* Claude Code: 右へドラッグして列に重なる → 押し戻される。掴んだ時点で最前面へ */
+  @keyframes claude {
+    0%, 35%  { left: 4%; z-index: 3; }
+    36%, 42% { left: 4%; z-index: 6; }
+    50%, 54% { left: 20%; z-index: 6; }
+    62%, 92% { left: 13%; z-index: 6; }
+    96%, 100% { left: 4%; z-index: 3; }
+  }
+  @keyframes pointer {
+    0%, 35%  { left: 40%; top: 22%; opacity: 0; }
+    39%, 42% { left: 34%; top: 9.2%; opacity: 1; }
+    50%, 53% { left: 50%; top: 9.2%; opacity: 1; }
+    57%, 100% { left: 50%; top: 9.2%; opacity: 0; }
+  }
+  /* ターミナル出力: ドッキングの裏で Claude Code が作業を進める */
+  @keyframes t1 {
+    0%, 11%  { max-height: 0; opacity: 0; }
+    14%, 94% { max-height: 8em; opacity: 1; }
+    95%, 100% { max-height: 0; opacity: 0; }
+  }
+  @keyframes t2 {
+    0%, 29%  { max-height: 0; opacity: 0; }
+    32%, 94% { max-height: 8em; opacity: 1; }
+    95%, 100% { max-height: 0; opacity: 0; }
+  }
+  @keyframes t3 {
+    0%, 62%  { max-height: 0; opacity: 0; }
+    65%, 94% { max-height: 8em; opacity: 1; }
+    95%, 100% { max-height: 0; opacity: 0; }
+  }
+  @keyframes t4 {
+    0%, 70%  { max-height: 0; opacity: 0; }
+    73%, 94% { max-height: 8em; opacity: 1; }
+    95%, 100% { max-height: 0; opacity: 0; }
+  }
+  @keyframes tspin {
+    0%, 70%  { max-height: 2em; opacity: 1; }
+    72%, 100% { max-height: 0; opacity: 0; }
+  }
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  /* テストが通った直後、常駐している Slack に返事が届く */
+  @keyframes newmsg {
+    0%, 75%  { max-height: 0; opacity: 0; padding: 0; background: rgba(255, 196, 0, 0); }
+    78%      { max-height: 6em; opacity: 1; padding: 0.5cqw 0; background: rgba(255, 196, 0, 0.22); }
+    90%, 100% { max-height: 6em; opacity: 1; padding: 0.5cqw 0; background: rgba(255, 196, 0, 0); }
+  }
+  @keyframes chip1 {
+    0%, 7%   { opacity: 0; transform: translateX(-50%) translateY(6px); }
+    10%, 17% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    21%, 100% { opacity: 0; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes chip2 {
+    0%, 23%  { opacity: 0; transform: translateX(-50%) translateY(6px); }
+    26%, 33% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    37%, 100% { opacity: 0; transform: translateX(-50%) translateY(0); }
+  }
+  /* 動きを減らす設定では、全部そろった完成状態で止める */
+  @media (prefers-reduced-motion: reduce) {
+    .stage, .stage * { animation-delay: -9.2s !important; animation-play-state: paused !important; }
+  }
+
+  /* ---- Floating header ---- */
+  .floatbar {
+    position: fixed;
+    top: 14px; left: 50%;
+    transform: translateX(-50%) translateY(-90px);
+    width: min(980px, calc(100% - 28px));
+    background: rgba(22, 22, 23, 0.88);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 12px 12px 22px;
+    z-index: 100;
+    opacity: 0;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s;
+    pointer-events: none;
+  }
+  .floatbar.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .floatbar .name { color: #f5f5f7; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  .floatbar .right { display: flex; align-items: center; gap: 14px; }
+  .floatbar .os { color: #86868b; font-size: 14px; }
+  .floatbar .get {
+    background: #0071e3;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1;
+    padding: 9px 18px;
+    border-radius: 980px;
+    text-decoration: none;
+  }
+  .floatbar .get:hover { background: #0077ed; }
+
+  /* ---- Text animations ---- */
+  .hero h1, .hero .cta-row, .hero .fineprint {
+    opacity: 0;
+    transform: translateY(22px);
+    animation: lift 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .hero .cta-row { animation-delay: 0.12s; }
+  .hero .fineprint { animation-delay: 0.2s; }
+  @keyframes lift {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero h1 .grad {
+    background-size: 220% 100%;
+    animation: gradpan 7s ease-in-out infinite alternate;
+  }
+  @keyframes gradpan {
+    from { background-position: 0% 0; }
+    to { background-position: 100% 0; }
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0s);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .hero h1, .hero .cta-row, .hero .fineprint { animation: none; opacity: 1; transform: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* ---- Sections ---- */
+  section { padding: 100px 0; }
+  section.gray { background: var(--gray-section); }
+  .section-head { text-align: center; max-width: 720px; margin: 0 auto 64px; }
+  .section-head h2 {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    font-size: 48px;
+    line-height: 1.08;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .section-head p { font-size: 21px; color: var(--text-secondary); margin-top: 18px; line-height: 1.4; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .tile {
+    background: var(--canvas);
+    border-radius: 18px;
+    padding: 40px 36px;
+  }
+  section:not(.gray) .tile { background: var(--gray-section); }
+  .tile h3 { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; }
+  .tile p { font-size: 17px; line-height: 25px; color: var(--text-secondary); margin-top: 10px; }
+  kbd {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid var(--hairline);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    padding: 2px 9px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  section.gray kbd { background: #fff; }
+
+  /* ---- Steps ---- */
+  .steps { max-width: 640px; margin: 0 auto; }
+  .steps li {
+    list-style: none;
+    display: flex;
+    gap: 24px;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--hairline);
+    align-items: baseline;
+  }
+  .steps li:last-child { border-bottom: none; }
+  .steps .num {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-subdued);
+    min-width: 36px;
+  }
+  .steps h3 { font-size: 19px; font-weight: 600; }
+  .steps p { font-size: 17px; line-height: 25px; color: var(--text-secondary); margin-top: 4px; }
+
+  /* ---- Pricing ---- */
+  .pricing { text-align: center; }
+  .price {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    font-size: 56px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .price small { font-size: 21px; color: var(--text-secondary); font-weight: 400; }
+  .pricing ul { list-style: none; margin: 24px 0 34px; color: var(--text-secondary); font-size: 17px; line-height: 2; }
+
+  /* ---- FAQ ---- */
+  .faq { max-width: 640px; margin: 0 auto; }
+  .faq details { border-bottom: 1px solid var(--hairline); }
+  .faq summary {
+    font-size: 17px;
+    font-weight: 600;
+    padding: 22px 0;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; color: var(--text-subdued); font-size: 22px; font-weight: 300; }
+  .faq details[open] summary::after { content: "−"; }
+  .faq details p { font-size: 17px; line-height: 25px; color: var(--text-secondary); padding: 0 0 22px; }
+
+  footer { padding: 40px 0 60px; }
+  footer .wrap { border-top: 1px solid var(--hairline); padding-top: 24px; }
+  footer p { color: var(--text-subdued); font-size: 12px; line-height: 1.6; }
+  footer a { color: var(--text-secondary); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 420px) {
+    .floatbar .os { display: none; }
+  }
+  @media (max-width: 734px) {
+    .hero h1 { font-size: 40px; }
+    .hero .sub { font-size: 19px; }
+    .section-head h2 { font-size: 32px; }
+    .grid { grid-template-columns: 1fr; }
+    section { padding: 68px 0; }
+  }
+</style>
+<!-- X conversion tracking base code -->
+<script>
+!function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);
+},s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='https://static.ads-twitter.com/uwt.js',
+a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script');
+twq('config','rfmv3');
+</script>
+<!-- End X conversion tracking base code -->
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M57Z4BGP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<div class="floatbar" id="floatbar" aria-hidden="true">
+  <span class="name">SidePin</span>
+  <span class="right">
+    <span class="os">macOS 14 or later</span>
+    <a class="get" href="https://github.com/ddnnn-a/sidepin/releases/latest/download/SidePin.dmg">Download</a>
+  </span>
+</div>
+
+<header class="hero wrap">
+  <h1>Your key apps.<br><span class="grad">Always in sight.</span></h1>
+  <div class="cta-row">
+    <a class="badge" href="https://github.com/ddnnn-a/sidepin/releases/latest/download/SidePin.dmg" aria-label="Download for macOS">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702z"/></svg>
+      <span class="badge-text"><small>Download for</small><strong>macOS</strong></span>
+    </a>
+  </div>
+  <p class="fineprint"><strong>First 24 hours free</strong> — then a one-time $9.99 license (up to 3 Macs) · macOS 14 or later</p>
+</header>
+
+<div class="demo wrap">
+  <div class="demo-frame" id="demo-slot" role="img" aria-label="Animation: Slack and Google Calendar snap into a reserved strip on the right and share it evenly while Claude Code keeps working in a terminal on the left; dragging the terminal onto the strip pushes it back">
+    <div class="stage">
+      <div class="menubar">
+        <b>Terminal</b><span>Shell</span><span>Edit</span><span>View</span><span>Window</span><span>Help</span>
+        <span class="mb-right">
+          <svg viewBox="0 0 512 512" aria-hidden="true"><rect x="40" y="96" width="260" height="320" rx="40" fill="none" stroke="#1d1d1f" stroke-width="36"/><rect x="332" y="96" width="140" height="148" rx="30" fill="#1d1d1f"/><rect x="332" y="268" width="140" height="148" rx="30" fill="#1d1d1f"/></svg>
+          <span>Tue 10:24</span>
+        </span>
+      </div>
+      <div class="zone"></div>
+
+      <div class="win claude">
+        <div class="bar"><span class="dots"></span>claude — ~/my-app</div>
+        <div class="term">
+          <div class="welcome"><span class="accent">✻</span> Welcome to <span class="me">Claude Code</span>!<br><span class="dim">cwd: ~/my-app</span></div>
+          <div><span class="dim">&gt;</span> <span class="me">Fix the flaky login test</span></div>
+          <div class="t1">
+            <div><span class="ok">⏺</span> Read(src/auth/session.ts)</div>
+            <div class="in dim">⎿  Read 142 lines</div>
+          </div>
+          <div class="t2">
+            <div><span class="ok">⏺</span> Update(src/auth/session.ts)</div>
+            <div class="in dim">⎿  Updated with 1 addition and 1 removal</div>
+            <div class="in2"><span class="del">42 -   if (expiresAt &lt; Date.now()) {</span></div>
+            <div class="in2"><span class="add">42 +   if (expiresAt &lt;= clock.now()) {</span></div>
+          </div>
+          <div class="t3">
+            <div><span class="ok">⏺</span> Bash(npm test -- login)</div>
+            <div class="in"><span class="dim">⎿</span>  <span class="ok">✓ 18 passed</span></div>
+          </div>
+          <div class="t4">
+            <div><span class="me">⏺</span> Fixed. Expiry now uses the injected clock, so the test no longer races.</div>
+            <div><span class="dim">&gt;</span> <span class="cursor"></span></div>
+          </div>
+          <div class="tspin"><span class="accent">✻ Working…</span> <span class="dim">(esc to interrupt)</span></div>
+        </div>
+      </div>
+
+      <div class="win slack">
+        <div class="bar"><span class="dots"></span><span class="search">Search Team</span></div>
+        <div class="sl">
+          <div class="sl-side">
+            <span class="ws">Team</span>
+            <span># general</span>
+            <span class="on"># eng-web</span>
+            <span># design</span>
+            <span># random</span>
+          </div>
+          <div class="sl-main">
+            <div class="sl-head"># eng-web</div>
+            <div class="sl-msgs">
+              <div class="msg"><i class="av" style="--c:#e8912d">M</i><div><b>Maya</b><small>10:02</small><p>Login test failed on main again 😩</p></div></div>
+              <div class="msg"><i class="av" style="--c:#4a8fe7">S</i><div><b>Sam</b><small>10:11</small><p>Design review moved to 2pm</p></div></div>
+              <div class="msg new"><i class="av" style="--c:#e8912d">M</i><div><b>Maya</b><small>10:24</small><p>CI is green again, thanks! 🎉</p></div></div>
+            </div>
+            <div class="sl-compose">Message #eng-web</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="win gcal">
+        <div class="bar"><span class="dots"></span>Calendar</div>
+        <div class="gc-head"><span class="today">Today</span><b>September 2026</b></div>
+        <div class="gc-days">
+          <span></span>
+          <span>MON<b>21</b></span>
+          <span class="is-today">TUE<b>22</b></span>
+          <span>WED<b>23</b></span>
+        </div>
+        <div class="gc-body">
+          <div class="gc-hours">
+            <span style="top:16.67%">10 AM</span><span style="top:33.33%">11 AM</span><span style="top:50%">12 PM</span><span style="top:66.67%">1 PM</span><span style="top:83.33%">2 PM</span>
+          </div>
+          <div class="gc-col">
+            <div class="ev" style="--c:#7986cb;top:8.33%;height:16.67%">Sprint planning</div>
+            <div class="ev" style="--c:#33b679;top:50%;height:16.67%">Lunch</div>
+          </div>
+          <div class="gc-col">
+            <div class="ev" style="--c:#039be5;top:25%;height:8.33%">Standup</div>
+            <div class="ev" style="--c:#8e24aa;top:58.33%;height:8.33%">1:1 Maya</div>
+            <div class="ev" style="--c:#e67c73;top:83.33%;height:16.67%">Design review</div>
+            <div class="gc-now" style="top:23.33%"></div>
+          </div>
+          <div class="gc-col">
+            <div class="ev" style="--c:#f4511e;top:0;height:33.33%">Focus time</div>
+          </div>
+        </div>
+      </div>
+
+      <svg class="pointer" viewBox="0 0 20 28" aria-hidden="true"><path d="M2 2 L2 22 L7 17.5 L10.5 25 L13.5 23.6 L10.2 16.3 L17 16.3 Z" fill="#111" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div class="chip chip1">⌃⌥⌘ →</div>
+      <div class="chip chip2">⌃⌥⌘ →</div>
+    </div>
+  </div>
+  <p class="demo-caption">Press <kbd>⌃⌥⌘ →</kbd> and the frontmost window snaps into the strip. Everything in the strip shares the space evenly — and stays visible.</p>
+</div>
+
+<section class="gray">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Stop digging for Slack.</h2>
+      <p>Some windows you need all day. SidePin gives them a permanent home at the edge of your screen, so they never end up buried again.</p>
+    </div>
+    <div class="grid">
+      <div class="tile">
+        <h3>A strip that defends itself</h3>
+        <p>Windows you bring to the front are gently pushed back into the work area instead of covering your strip. Your docked apps stay visible while you work full-width.</p>
+      </div>
+      <div class="tile">
+        <h3>One shortcut in, one out</h3>
+        <p><kbd>⌃⌥⌘ →</kbd> docks the frontmost window. <kbd>⌃⌥⌘ ←</kbd> releases it. Windows in the strip split the space evenly, automatically. Drag &amp; drop works too.</p>
+      </div>
+      <div class="tile">
+        <h3>Every display, its own strip</h3>
+        <p>Choose the edge — right, left, top, or bottom — and the size, from 10% to 50%, per display. Settings survive unplugging and reconnecting monitors.</p>
+      </div>
+      <div class="tile">
+        <h3>Native. Tiny. Quiet.</h3>
+        <p>A single menu bar utility written in Swift. No Electron, no accounts, no network activity while you work. Notarized by Apple.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Up and running in a minute.</h2>
+    </div>
+    <ol class="steps">
+      <li>
+        <span class="num">1</span>
+        <div>
+          <h3>Download and open</h3>
+          <p>The download is free, signed, and notarized by Apple — and everything works free for your first 24 hours.</p>
+        </div>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <div>
+          <h3>Get your license</h3>
+          <p>One click opens checkout. After payment, your license is delivered and activated automatically — nothing to copy, nothing to paste.</p>
+        </div>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <div>
+          <h3>Allow accessibility, then dock away</h3>
+          <p>Tick one checkbox in System Settings, bring Slack to the front, and press <kbd>⌃⌥⌘ →</kbd>. It snaps into the strip — add more and they share the space evenly.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="gray pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>One price. Yours for good.</h2>
+    </div>
+    <div class="price">$9.99 <small>one-time</small></div>
+    <ul>
+      <li>First 24 hours free, full-featured</li>
+      <li>Use on up to 3 Macs</li>
+      <li>All updates included</li>
+      <li>No subscription. No account.</li>
+    </ul>
+    <a class="btn" href="https://github.com/ddnnn-a/sidepin/releases/latest/download/SidePin.dmg">Try it free for 24 hours</a>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Questions, answered.</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>Can I try it before buying?</summary>
+        <p>Yes. Everything works free for the first 24 hours after your first launch — no license needed. After that, a one-time $9.99 license unlocks it for good.</p>
+      </details>
+      <details>
+        <summary>Which Macs are supported?</summary>
+        <p>macOS 14 Sonoma or later, on Apple silicon and Intel. The app is signed and notarized by Apple.</p>
+      </details>
+      <details>
+        <summary>Why does it need accessibility permission?</summary>
+        <p>Moving and resizing other apps' windows is only possible through macOS's accessibility API. That's the only thing the permission is used for.</p>
+      </details>
+      <details>
+        <summary>Can I move my license to a new Mac?</summary>
+        <p>A license covers 3 active Macs, and you can deactivate a device any time from your purchase portal.</p>
+      </details>
+      <details>
+        <summary>What if it doesn't fit my workflow?</summary>
+        <p>Ask for a refund within 14 days and you'll get one, no questions asked. Purchases are handled by <a href="https://polar.sh">Polar</a>, our merchant of record — open your receipt email or your <a href="https://polar.sh/14firm/portal">purchase portal</a> to request it.</p>
+      </details>
+      <details>
+        <summary>Does SidePin see what's in my windows?</summary>
+        <p>No. It reads window positions and sizes so it can move them, and nothing else. No analytics, no accounts, no window contents — ever. The only thing it sends over the network is a license check.</p>
+      </details>
+      <details>
+        <summary>Something's broken. Where do I get help?</summary>
+        <p>Open an issue on <a href="https://github.com/ddnnn-a/sidepin/issues">GitHub</a> and you'll get a reply. For anything about a payment, refund or receipt, contact <a href="https://polar.sh">Polar</a>.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><a href="https://github.com/ddnnn-a/sidepin/issues">Support</a> · <a href="https://polar.sh/14firm/portal">Purchases &amp; refunds</a> · <a href="https://github.com/ddnnn-a/sidepin/releases">Release notes</a></p>
+    <p>© 2026 SidePin. Sold by <a href="https://polar.sh">Polar</a>, our merchant of record — that is the name you will see on your statement. Mac and macOS are trademarks of Apple Inc.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // ダウンロードリンクのクリックで X 広告のダウンロードイベントを発火する
+  document.querySelectorAll('a[href*="releases/latest/download/SidePin.dmg"]').forEach(function (link) {
+    link.addEventListener("click", function () {
+      if (window.twq) twq("event", "tw-rfmv3-rfmwu", {});
+    });
+  });
+  // フローティングヘッダーは機能なのでモーション設定に関係なく動かす
+  var bar = document.getElementById("floatbar");
+  var heroCta = document.querySelector(".hero .cta-row");
+  if (bar && heroCta && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      var out = !entries[0].isIntersecting && entries[0].boundingClientRect.top < 0;
+      bar.classList.toggle("show", out);
+      bar.setAttribute("aria-hidden", out ? "false" : "true");
+    }, { threshold: 0 }).observe(heroCta);
+  }
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var targets = document.querySelectorAll(
+    ".section-head, .tile, .steps li, .faq details, .price, .pricing ul, .pricing .btn, .demo-caption, footer p"
+  );
+  targets.forEach(function (el) { el.classList.add("reveal"); });
+  // 兄弟要素は 80ms ずつ遅らせて順に立ち上げる
+  document.querySelectorAll(".grid, .steps, .faq").forEach(function (group) {
+    Array.prototype.forEach.call(group.children, function (child, i) {
+      child.style.setProperty("--d", (i * 0.08) + "s");
+    });
+  });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("in");
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
+  targets.forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>

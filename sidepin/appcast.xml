@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>SidePin</title>
+    <link>https://ddnnn-a.github.io/sidepin/appcast.xml</link>
+    <description>Release notes for SidePin.</description>
+    <language>en</language>
+    <item>
+        <title>Version 1.6</title>
+        <pubDate>Mon, 28 Sep 2026 10:10:22 +0000</pubDate>
+        <sparkle:version>9</sparkle:version>
+        <sparkle:shortVersionString>1.6</sparkle:shortVersionString>
+        <enclosure url="https://github.com/ddnnn-a/sidepin/releases/download/v1.6/SidePin.dmg"
+                   sparkle:edSignature="LCsfNJKg6aA2MXw3NW7BbKGZRKkGgbY9xp9HwTTfDUnewqePCeq17qYIav2df7B+X+m4YdsQpbmHzT2taFBtDg=="
+                   length="2178920"
+                   type="application/octet-stream" />
+    </item>
+    <item>
+        <title>Version 1.5.2</title>
+        <pubDate>Wed, 23 Sep 2026 13:13:39 +0000</pubDate>
+        <sparkle:version>8</sparkle:version>
+        <sparkle:shortVersionString>1.5.2</sparkle:shortVersionString>
+        <enclosure url="https://github.com/ddnnn-a/sidepin/releases/download/v1.5.2/SidePin.dmg"
+                   sparkle:edSignature="zAa16JUQ7nxbrZqMLAqwm8mIsB890KAZTB31IoBcnAfWtwP4y3XQryR0KZ+q9+o+SYkZrgAs9AylA7AlFpO4Aw=="
+                   length="2177208"
+                   type="application/octet-stream" />
+    </item>
+    <item>
+        <title>Version 1.5.1</title>
+        <pubDate>Wed, 23 Sep 2026 12:31:21 +0000</pubDate>
+        <sparkle:version>7</sparkle:version>
+        <sparkle:shortVersionString>1.5.1</sparkle:shortVersionString>
+        <enclosure url="https://github.com/ddnnn-a/sidepin/releases/download/v1.5.1/SidePin.dmg"
+                   sparkle:edSignature="9/0g6NxcC+AiydB3R4sfIDnfacX3zdpQjptakmKrZmudEnjJ/Hf8hyKIntLGX0+CvwPqKC28vCBEHUuDIrD0BQ=="
+                   length="2162068"
+                   type="application/octet-stream" />
+    </item>
+    <item>
+        <title>Version 1.5</title>
+        <pubDate>Wed, 23 Sep 2026 10:42:24 +0000</pubDate>
+        <sparkle:version>6</sparkle:version>
+        <sparkle:shortVersionString>1.5</sparkle:shortVersionString>
+        <enclosure url="https://github.com/ddnnn-a/sidepin/releases/download/v1.5/SidePin.dmg"
+                   sparkle:edSignature="g72/RvxgsJ5JeEkEpIIBfVMcP7apoH+9NVJwkgG64Z2zs8nCYxUs1Ub1d+SQ/HeAckazYmbmO8OZjNo/eW9VDw=="
+                   length="2161838"
+                   type="application/octet-stream" />
+    </item>
+  </channel>
+</rss>
