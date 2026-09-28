@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>SidePin</title>
-    <link>https://ddnnn-a.github.io/sidepin/appcast.xml</link>
+    <link>https://14firm-dev.github.io/sidepin-dist/appcast.xml</link>
     <description>Release notes for SidePin.</description>
     <language>en</language>
     <item>
