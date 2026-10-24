@@ -6,6 +6,16 @@
     <description>Release notes for SidePin.</description>
     <language>en</language>
     <item>
+        <title>Version 1.7.2</title>
+        <pubDate>Sat, 24 Oct 2026 06:25:27 +0000</pubDate>
+        <sparkle:version>13</sparkle:version>
+        <sparkle:shortVersionString>1.7.2</sparkle:shortVersionString>
+        <enclosure url="https://github.com/14firm-dev/sidepin-dist/releases/download/v1.7.2/SidePin.dmg"
+                   sparkle:edSignature="YdMzRblWq8UrKxL0WVKJmmgdMnsXtkrEJuu6+rjd5gOic3M5+TkA7emfjJjxmUapJD8rp3H2rU5uKakvn+pdBA=="
+                   length="2188087"
+                   type="application/octet-stream" />
+    </item>
+    <item>
         <title>Version 1.7.1</title>
         <pubDate>Sat, 03 Oct 2026 18:54:45 +0000</pubDate>
         <sparkle:version>12</sparkle:version>
